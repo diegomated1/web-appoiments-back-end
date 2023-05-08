@@ -1,6 +1,6 @@
 import {Client} from "cassandra-driver";
 
-export default class AppoimentsDatabase{
+export default class Appoiments_Database{
 
     client: Client
 

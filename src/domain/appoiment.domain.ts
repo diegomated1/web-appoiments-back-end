@@ -1,4 +1,4 @@
-export interface Appoiment{
+export default interface Appoiment{
     id: number
     name: string
     second_name: string
