@@ -1,13 +1,45 @@
-import {Appoiment, Appoiment_Model_Port, Appoiment_Controller_Port} from './appoiment.controller.dependency'
+import {Appoiment, Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui} from './appoiment.controller.dependency'
 
 export default class Appoiment_Controller implements Appoiment_Controller_Port {
   constructor (private readonly model: Appoiment_Model_Port) { }
   
-  getAll = (): Appoiment[] => {
-    return this.model.getAll()
+  create = async (req: Request, res: Response) => {
+    try{
+      const {
+        client_id, client_name, client_second_name, client_address, client_birthday,
+        description, place, date, type
+      } = req.body;
+      const appoiment = await this.model.create({
+       id_appoiment: ui(),
+       client_id, client_name, client_second_name, client_address, client_birthday,
+       description, place, date, type, status: 0
+      });
+      if(appoiment==null){
+        res.status(400).json({message: 'Invalid data'});
+      }else{
+        res.status(200).json({data: appoiment});
+      }
+    }catch(error){
+      res.status(500).json({message: 'Internal error server'});
+    }
   }
 
-  getById = (id_appoiment: string): Appoiment | null => {
-    return this.model.getById(id_appoiment);
+  getAll = async (req: Request, res: Response) => {
+    try{
+      const appoiments = await this.model.getAll();
+      res.status(200).json({data: appoiments});
+    }catch(error){
+      res.status(500).json({message: 'Internal error server'});
+    }
+  }
+
+  getById = async (req: Request, res: Response) => {
+    try{
+      const {id_appoiment} = req.params;
+      const appoiment = await this.model.getById(id_appoiment);
+      res.status(200).json({data: appoiment});
+    }catch(error){
+      res.status(500).json({message: 'Internal error server'});
+    }
   };
 }
