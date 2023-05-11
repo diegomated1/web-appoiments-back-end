@@ -6,6 +6,24 @@ export default class Ticket_Model implements Ticket_Model_Port{
         private readonly repository: Ticket_Repository_Adapter_Port<Ticket>
     ){}
 
-    getAll = () => this.repository.getAll();
+    create = (entity: Ticket):Promise<Ticket|null> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const ticket = await this.repository.save(entity);
+                res(ticket);
+            }catch(error){
+                rej(error);
+            }
+        });
+    };
+    getAll = ():Promise<Ticket[]> => {
+        return new Promise((res, rej)=>{
+            try{
+                res(this.repository.getAll());
+            }catch(error){
+                rej(error);
+            }
+        });
+    };
     getById = (id_appoiment:string) => this.repository.getById(id_appoiment);
 }
