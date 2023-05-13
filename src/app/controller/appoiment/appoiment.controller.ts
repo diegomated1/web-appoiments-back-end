@@ -47,9 +47,15 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
   update = async (req: Request, res: Response) => {
     try{
       const {id_appoiment} = req.params;
-      const appoiment = await this.model.getById(id_appoiment);
-      res.status(200).json({data: appoiment});
+      const {appoiment} = req.body;
+      const _appoimentModel = await this.model.getById(id_appoiment);
+      if(_appoimentModel==null){
+        return res.status(404).json({message: "appoiment not found"});
+      }
+      const _appoiment = await this.model.update(id_appoiment, {...appoiment, date: _appoimentModel.date});
+      res.status(200).json({data: _appoiment});
     }catch(error){
+      console.log(error);
       res.status(500).json({message: 'Internal error server'});
     }
   };

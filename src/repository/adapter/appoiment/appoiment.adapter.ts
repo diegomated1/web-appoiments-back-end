@@ -60,11 +60,12 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
                 const params: string[] = [];
                 const columns: string[] = [];
                 Object.entries(entity).forEach((attr)=>{
+                    if(attr[0]=='date') return;
                     columns.push(attr[0]);
                     params.push(attr[1]);
                 });
-                const query = `UPDATE appoiments_by_id SET ${columns.map(c=>(` ${c} = ?`)).join(', ')} WHERE id_appoiment = ?`;
-                await this.database.client.execute(query, [...params, id_appoiment], {prepare: true});
+                const query = `UPDATE appoiments_by_id SET ${columns.map(c=>(` ${c} = ?`)).join(', ')} WHERE id_appoiment = ? AND date = ?`;
+                await this.database.client.execute(query, [...params, id_appoiment, entity.date], {prepare: true});
                 res(await this.getById(id_appoiment));
             }catch(error){
                 rej(error);
