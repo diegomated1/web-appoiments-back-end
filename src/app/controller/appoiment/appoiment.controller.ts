@@ -7,12 +7,12 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
     try{
       const {
         client_id, client_name, client_second_name, client_address, client_birthday,
-        description, place, date, type
+        description, place, date, type, premium
       } = req.body;
       const appoiment = await this.model.create({
        id_appoiment: ui(),
        client_id, client_name, client_second_name, client_address, client_birthday,
-       description, place, date, type, status: 0
+       description, place, date, type, premium, status: 0
       });
       if(appoiment==null){
         res.status(400).json({message: 'Invalid data'});
@@ -20,6 +20,7 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
         res.status(200).json({data: appoiment});
       }
     }catch(error){
+      console.log(error);
       res.status(500).json({message: 'Internal error server'});
     }
   }
@@ -34,6 +35,16 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
   }
 
   getById = async (req: Request, res: Response) => {
+    try{
+      const {id_appoiment} = req.params;
+      const appoiment = await this.model.getById(id_appoiment);
+      res.status(200).json({data: appoiment});
+    }catch(error){
+      res.status(500).json({message: 'Internal error server'});
+    }
+  };
+
+  update = async (req: Request, res: Response) => {
     try{
       const {id_appoiment} = req.params;
       const appoiment = await this.model.getById(id_appoiment);

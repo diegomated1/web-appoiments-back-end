@@ -6,10 +6,10 @@ export default class Ticket_Model implements Ticket_Model_Port{
         private readonly repository: Ticket_Repository_Adapter_Port<Ticket>
     ){}
 
-    create = (entity: Ticket):Promise<Ticket|null> => {
+    create = (entity: Ticket, ttl?:number):Promise<Ticket|null> => {
         return new Promise(async(res, rej)=>{
             try{
-                const ticket = await this.repository.save(entity);
+                const ticket = await this.repository.save(entity, ttl);
                 res(ticket);
             }catch(error){
                 rej(error);

@@ -10,23 +10,36 @@ export default class Ticket_Controller implements Ticket_Controller_Port {
   
   create = async (req: Request, res: Response) => {
     try{
-      const {id_appoiment, priority} = req.body;
+      const {id_appoiment} = req.body;
       const appoiment = await this.appoimentModel.getById(id_appoiment);
+
       if(appoiment==null){
         return res.status(404).json({message: 'Appoiment not found'});
       }
+      const currentDate = new Date();
+      console.log(currentDate.getTime());
+      console.log(appoiment.date.getTime());
+      const client_age = (currentDate.getTime() - appoiment.client_birthday.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
+      const exp = Math.ceil((appoiment.date.getTime()-currentDate.getTime())/1000) + 0;
+      console.log(exp);
+      let priority = (appoiment.premium) ? 
+                        (client_age>=60) ? 0 : 2 
+                        : (client_age>=60) ? 1 : 3;
+
       const ticket = await this.model.create({
         id_ticket: ui(),
         date: new Date(),
         id_appoiment,
         priority
-      });
+      }, exp);
+
       if(ticket==null){
         return res.status(400).json({message: 'Invalid data'});
       }else{
         return res.status(200).json({data: ticket});
       }
     }catch(error){
+      console.log(error);
       res.status(500).json({message: 'Internal error server'});
     }
   }

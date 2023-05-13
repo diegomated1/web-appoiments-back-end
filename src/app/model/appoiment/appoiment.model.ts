@@ -36,4 +36,16 @@ export default class Appoiment_Model implements Appoiment_Model_Port{
             }
         })
     };
+
+    update = (id_appoiment: string, entity: Appoiment): Promise<Appoiment | null> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const appoiment = await this.repository.update(id_appoiment, entity);
+                res(appoiment);
+            }catch(error){
+                rej(error);
+            }
+        });
+    };
+
 }
