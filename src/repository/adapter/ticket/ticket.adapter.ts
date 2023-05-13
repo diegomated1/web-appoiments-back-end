@@ -37,7 +37,7 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
         });
     };
 
-    save = (entity:Ticket): Promise<Ticket> => {
+    save = (entity:Ticket, ttl?:number): Promise<Ticket> => {
         return new Promise(async(res, rej)=>{
             try{
                 const params: string[] = [];
@@ -46,13 +46,17 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
                     columns.push(attr[0]);
                     params.push(attr[1]);
                 });
-                const query1 = `INSERT INTO tickets_by_id (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
-                const query2 = `INSERT INTO tickets_by_priority (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
-
+                let query1 = `INSERT INTO tickets_by_id (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
+                let query2 = `INSERT INTO tickets_by_priority (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
+                if(ttl){
+                    query1 += ` USING TTL ${ttl}`;
+                    query2 += ` USING TTL ${ttl}`;
+                }
+                console.log(query1);
                 const queries =  [
                     { query: query1, params: [...params] },
                     { query: query2, params: [...params] } 
-                 ];
+                ];
 
                 await this.database.client.batch(queries, {prepare: true});
                 res(await this.getById(entity.id_ticket));
@@ -62,6 +66,11 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
         });
     };
 
-    update = (entity: Ticket) => null;
+    update = (id_appoiment:string, entity: Ticket): Promise<Ticket|null> => {
+        return new Promise(async(res, rej)=>{
+            res(null);
+        });
+    };
+
     delete = (id: string) => true;
 }
