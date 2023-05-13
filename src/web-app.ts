@@ -1,4 +1,4 @@
-import { RouterWebAppPort, Application, express, path, morgan } from './web-app.dependency'
+import { RouterWebAppPort, Application, express, path, morgan, cors } from './web-app.dependency'
 export default class WebApp {
   #app: Application
 
@@ -9,6 +9,9 @@ export default class WebApp {
   }
 
   #config = (): void => {
+    this.#app.use(cors({
+      origin: process.env.CLIENT_HOST! || true,
+    }));
     this.#app.use(express.static(path.join(__dirname, '../public')))
     this.#app.use(express.json());
     this.#app.use(morgan('dev'));
