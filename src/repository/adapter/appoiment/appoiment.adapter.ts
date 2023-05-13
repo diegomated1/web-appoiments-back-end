@@ -1,7 +1,6 @@
 import {
     Appoiment,
     Appoiment_Repository_Adapter_Port,
-    Appoiment_Repository_Entity,
     Appoiments_Database 
 } from './appoiment.adapter.dependency';
 

@@ -1,7 +1,6 @@
 import {
     Ticket,
     Ticket_Repository_Adapter_Port,
-    Ticket_Repository_Entity,
     Appoiments_Database 
 } from './ticket.adapter.dependency';
 

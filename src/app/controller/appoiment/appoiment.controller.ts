@@ -1,4 +1,4 @@
-import {Appoiment, Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui} from './appoiment.controller.dependency'
+import {Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui} from './appoiment.controller.dependency'
 
 export default class Appoiment_Controller implements Appoiment_Controller_Port {
   constructor (private readonly model: Appoiment_Model_Port) { }

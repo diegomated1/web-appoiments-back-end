@@ -1,4 +1,4 @@
-import { RouterWebAppPort, Application, express, dotenv, path, morgan } from './web-app.dependency'
+import { RouterWebAppPort, Application, express, path, morgan } from './web-app.dependency'
 export default class WebApp {
   #app: Application
 

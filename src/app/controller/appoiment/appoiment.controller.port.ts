@@ -1,4 +1,3 @@
-import Appoiment from "../../../domain/appoiment.domain"
 import { Request, Response } from "express"
 
 export default interface Appoiment_Controller_Port {
