@@ -3,8 +3,9 @@ export default interface Appoiment{
     client_id: string
     client_name: string
     client_second_name: string
-    client_birthday: string
+    client_birthday: Date
     client_address: string
+    premium: boolean
     description: string
     status: number
     type: string
