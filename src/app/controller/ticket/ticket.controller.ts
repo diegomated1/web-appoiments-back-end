@@ -15,11 +15,11 @@ export default class Ticket_Controller implements Ticket_Controller_Port {
         return res.status(404).json({message: 'Appoiment not found'});
       }
       const currentDate = new Date();
-      console.log(currentDate.getTime());
-      console.log(appoiment.date.getTime());
       const client_age = (currentDate.getTime() - appoiment.client_birthday.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
       const exp = Math.ceil((appoiment.date.getTime()-currentDate.getTime())/1000) + 0;
-      console.log(exp);
+      if(exp<=0){
+        return res.status(400).json({message: 'Appoiment expired'});
+      }
       let priority = (appoiment.premium) ? 
                         (client_age>=60) ? 0 : 2 
                         : (client_age>=60) ? 1 : 3;
