@@ -131,11 +131,11 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
                 }
                 let query1 = `DELETE FROM appoiments_by_id WHERE id_appoiment = ?`;
                 let query2 = `DELETE FROM appoiments_by_client WHERE client_id = ? AND id_appoiment = ?`;
-                let query3 = `DELETE FROM appoiments_by_client WHERE status = ? AND date = ? AND id_appoiment = ?`;
+                let query3 = `DELETE FROM appoiments_by_status WHERE status = ? AND date = ? AND id_appoiment = ?`;
                 const queries =  [
                     { query: query1, params: [id] },
                     { query: query2, params: [_appoiment.client_id, id] },
-                    { query: query3, params: [_appoiment.client_id, _appoiment.date, id] } 
+                    { query: query3, params: [_appoiment.status, _appoiment.date, id] } 
                 ];
                 await this.database.client.batch(queries, {prepare: true});
                 res(true);
