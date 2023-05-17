@@ -71,5 +71,9 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
         });
     };
 
-    delete = (id: string) => true;
+    delete = (id: string):Promise<boolean> => {
+        return new Promise((res, rej)=>{
+            res(true)
+        });
+    }
 }

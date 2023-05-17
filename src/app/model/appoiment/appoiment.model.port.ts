@@ -6,4 +6,5 @@ export default interface Appoiment_Model_Port {
   getAllByClient: (client_id:string) => Promise<Appoiment[]>
   getById: (id_appoiment:string) => Promise<Appoiment|null>
   update: (id_appoiment:string, entity:Appoiment) => Promise<Appoiment|null>
+  delete: (id_appoiment:string) => Promise<boolean>
 }

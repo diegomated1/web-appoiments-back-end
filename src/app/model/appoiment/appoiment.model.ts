@@ -59,4 +59,15 @@ export default class Appoiment_Model implements Appoiment_Model_Port{
         });
     };
 
+    delete = (id_appoiment: string): Promise<boolean> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const result = await this.repository.delete(id_appoiment);
+                res(result);
+            }catch(error){
+                rej(error);
+            }
+        });
+    }
+
 }

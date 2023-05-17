@@ -48,7 +48,11 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
     try{
       const {id_appoiment} = req.params;
       const appoiment = await this.model.getById(id_appoiment);
-      res.status(200).json({data: appoiment});
+      if(appoiment){
+        res.status(200).json({data: appoiment});
+      }else{
+        res.status(404).json({message: 'Appoiment not found'});
+      }
     }catch(error){
       res.status(500).json({message: 'Internal error server'});
     }
@@ -62,11 +66,22 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
       if(_appoimentModel==null){
         return res.status(404).json({message: "appoiment not found"});
       }
-      const _appoiment = await this.model.update(id_appoiment, {...appoiment, date: _appoimentModel.date});
+      const _appoiment = await this.model.update(id_appoiment, {...appoiment, date: _appoimentModel.date, client_id: _appoimentModel.client_id});
       res.status(200).json({data: _appoiment});
     }catch(error){
       console.log(error);
       res.status(500).json({message: 'Internal error server'});
     }
   };
+
+  delete = async (req: Request, res: Response) => {
+    try{
+      const {id_appoiment} = req.params;
+      const result = await this.model.delete(id_appoiment);
+      res.status(200).json({result});
+    }catch(error){
+      res.status(500).json({message: 'Internal error server'});
+    }
+  };
+
 }

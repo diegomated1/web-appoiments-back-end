@@ -6,4 +6,5 @@ export default interface Appoiment_Controller_Port {
   getAllByClient: (req: Request, res: Response) => void
   getById: (req: Request, res: Response) => void
   update: (req: Request, res: Response) => void
+  delete: (req: Request, res: Response) => void
 }

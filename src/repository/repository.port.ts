@@ -3,5 +3,5 @@ export default interface RepositoryPort<T> {
     getAll: () => Promise<T[]>
     save: (entity: T, ttl?:number) => Promise<T|null>
     update: (id:string, entity: T) => Promise<T|null>
-    delete: (id: string) => boolean
+    delete: (id: string) => Promise<boolean>
 }

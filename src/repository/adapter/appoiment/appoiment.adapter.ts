@@ -10,7 +10,7 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
         private readonly database: Appoiments_Database
     ){}
 
-    getById = (id: string): Promise<Appoiment> => {
+    getById = (id: string): Promise<Appoiment|null> => {
         return new Promise(async(res, rej)=>{
             try{
                 const query = `SELECT * FROM appoiments_by_id WHERE id_appoiment = ?`;
@@ -49,7 +49,7 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
         });
     };
 
-    save = (entity:Appoiment): Promise<Appoiment> => {
+    save = (entity:Appoiment): Promise<Appoiment|null> => {
         return new Promise(async(res, rej)=>{
             try{
                 const params: string[] = [];
@@ -78,12 +78,17 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
                 const params: string[] = [];
                 const columns: string[] = [];
                 Object.entries(entity).forEach((attr)=>{
-                    if(attr[0]=='date') return;
+                    if(attr[0]=='date'||attr[0]=='client_id') return;
                     columns.push(attr[0]);
                     params.push(attr[1]);
                 });
-                const query = `UPDATE appoiments_by_id SET ${columns.map(c=>(` ${c} = ?`)).join(', ')} WHERE id_appoiment = ? AND date = ?`;
-                await this.database.client.execute(query, [...params, id_appoiment, entity.date], {prepare: true});
+                let query1 = `UPDATE appoiments_by_id SET ${columns.map(c=>(` ${c} = ?`)).join(', ')} WHERE id_appoiment = ? AND date = ?`;
+                let query2 = `UPDATE appoiments_by_client SET ${columns.map(c=>(` ${c} = ?`)).join(', ')} WHERE client_id = ? AND id_appoiment = ? AND date = ?`;
+                const queries =  [
+                    { query: query1, params: [...params, id_appoiment, entity.date] },
+                    { query: query2, params: [...params, entity.client_id, id_appoiment, entity.date] } 
+                ];
+                await this.database.client.batch(queries, {prepare: true});
                 res(await this.getById(id_appoiment));
             }catch(error){
                 rej(error);
@@ -91,5 +96,24 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
         });
     };
     
-    delete = (id: string) => true;
+    delete = (id: string): Promise<boolean> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const _appoiment = await this.getById(id);
+                if(!_appoiment){
+                    return res(false);
+                }
+                let query1 = `DELETE FROM appoiments_by_id WHERE id_appoiment = ?`;
+                let query2 = `DELETE FROM appoiments_by_client WHERE client_id = ? AND id_appoiment = ?`;
+                const queries =  [
+                    { query: query1, params: [id] },
+                    { query: query2, params: [_appoiment.client_id, id] } 
+                ];
+                await this.database.client.batch(queries, {prepare: true});
+                res(true);
+            }catch(error){
+                rej(error);
+            }
+        });
+    };
 }
