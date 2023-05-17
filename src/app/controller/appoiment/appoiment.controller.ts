@@ -1,4 +1,4 @@
-import {Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui} from './appoiment.controller.dependency'
+import {Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui, Appoiment} from './appoiment.controller.dependency'
 
 export default class Appoiment_Controller implements Appoiment_Controller_Port {
   constructor (private readonly model: Appoiment_Model_Port) { }
@@ -27,7 +27,16 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
 
   getAll = async (req: Request, res: Response) => {
     try{
-      const appoiments = await this.model.getAll();
+      const {status} = req.query;
+      const isNum = /^-?\d+$/;
+      let appoiments: Appoiment[];
+      if(status && typeof status == 'string' && isNum.test(status)){
+        let _status = Number(status);
+        _status = (_status < 0 || _status > 2) ? 0 : _status;
+        appoiments = await this.model.getAllByStatus(_status);
+      }else{
+        appoiments = await this.model.getAll();
+      }
       res.status(200).json({data: appoiments});
     }catch(error){
       res.status(500).json({message: 'Internal error server'});
