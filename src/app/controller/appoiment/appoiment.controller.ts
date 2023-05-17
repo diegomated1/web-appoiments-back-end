@@ -1,22 +1,35 @@
-import {Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui, Appoiment} from './appoiment.controller.dependency'
+import {Appoiment_Model_Port, Appoiment_Controller_Port, Request, Response, ui, Appoiment, nsc} from './appoiment.controller.dependency'
 
 export default class Appoiment_Controller implements Appoiment_Controller_Port {
   constructor (private readonly model: Appoiment_Model_Port) { }
   
   create = async (req: Request, res: Response) => {
     try{
+      // Obtain appoiment from body
       const {
         client_id, client_name, client_second_name, client_address, client_birthday,
         description, place, date, type, premium
       } = req.body;
+
+      // Create appoiment
       const appoiment = await this.model.create({
        id_appoiment: ui(),
        client_id, client_name, client_second_name, client_address, client_birthday,
        description, place, date, type, premium, status: 0
       });
+
+      // Check if appoiment is created
       if(appoiment==null){
         res.status(400).json({message: 'Invalid data'});
       }else{
+        // if created changed status to 1 if status is 0 when passed the appoiment date (expired appoiment)
+        const date = new Date(appoiment.date.getTime());
+        nsc.scheduleJob(date, async ()=>{
+          const _appoiment = await this.model.getById(appoiment.id_appoiment);
+          if(_appoiment && _appoiment.status==0){
+            await this.model.update(appoiment.id_appoiment, {status: 1} as Appoiment);
+          }
+        });
         res.status(200).json({data: appoiment});
       }
     }catch(error){
@@ -75,7 +88,7 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
       if(_appoimentModel==null){
         return res.status(404).json({message: "appoiment not found"});
       }
-      const _appoiment = await this.model.update(id_appoiment, {...appoiment, date: _appoimentModel.date, client_id: _appoimentModel.client_id});
+      const _appoiment = await this.model.update(id_appoiment, {...appoiment});
       res.status(200).json({data: _appoiment});
     }catch(error){
       console.log(error);
