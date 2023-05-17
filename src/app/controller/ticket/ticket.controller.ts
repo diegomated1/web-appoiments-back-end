@@ -1,6 +1,4 @@
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
-import {Ticket_Controller_Port, Ticket_Model_Port, Request, Response, Appoiment_Model_Port, ui} from './ticket.controller.dependency'
+import {Ticket_Controller_Port, Ticket_Model_Port, Request, Response, Appoiment_Model_Port} from './ticket.controller.dependency'
 
 export default class Ticket_Controller implements Ticket_Controller_Port {
   constructor (
