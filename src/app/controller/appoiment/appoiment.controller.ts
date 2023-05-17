@@ -34,6 +34,16 @@ export default class Appoiment_Controller implements Appoiment_Controller_Port {
     }
   }
 
+  getAllByClient = async (req: Request, res: Response) => {
+    try{
+      const {client_id} = req.params;
+      const appoiments = await this.model.getAllByClient(client_id);
+      res.status(200).json({data: appoiments});
+    }catch(error){
+      res.status(500).json({message: 'Internal error server'});
+    }
+  }
+
   getById = async (req: Request, res: Response) => {
     try{
       const {id_appoiment} = req.params;

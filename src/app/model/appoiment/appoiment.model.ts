@@ -37,6 +37,17 @@ export default class Appoiment_Model implements Appoiment_Model_Port{
         })
     };
 
+    getAllByClient = (client_id: string): Promise<Appoiment[]> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const appoiments = await this.repository.getAllByClient(client_id);
+                res(appoiments);
+            }catch(error){
+                rej(error);
+            }
+        })
+    }
+
     update = (id_appoiment: string, entity: Appoiment): Promise<Appoiment | null> => {
         return new Promise(async(res, rej)=>{
             try{

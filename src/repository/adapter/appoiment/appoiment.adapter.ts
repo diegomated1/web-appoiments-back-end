@@ -23,6 +23,19 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
         });
     };
 
+    getAllByClient = (client_id: string): Promise<Appoiment[]> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const query = `SELECT * FROM appoiments_by_client WHERE client_id = ?`;
+                const query_result = await this.database.client.execute(query, [client_id], {prepare: true});
+                const rows = query_result.rows;
+                res(rows as unknown as Appoiment[]);
+            }catch(error){
+                rej(error);
+            }
+        });
+    };
+
     getAll = (): Promise<Appoiment[]> => {
         return new Promise(async(res, rej)=>{
             try{
@@ -45,8 +58,13 @@ export default class Appoiment_Repository_Adapter implements Appoiment_Repositor
                     columns.push(attr[0]);
                     params.push(attr[1]);
                 });
-                const query = `INSERT INTO appoiments_by_id (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
-                await this.database.client.execute(query, [...params], {prepare: true});
+                let query1 = `INSERT INTO appoiments_by_id (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
+                let query2 = `INSERT INTO appoiments_by_client (${columns.join(', ')}) VALUES (${columns.map(_=>'?').join(', ')})`;
+                const queries =  [
+                    { query: query1, params: [...params] },
+                    { query: query2, params: [...params] } 
+                ];
+                await this.database.client.batch(queries, {prepare: true});
                 res(await this.getById(entity.id_appoiment));
             }catch(error){
                 rej(error);
