@@ -26,4 +26,15 @@ export default class Ticket_Model implements Ticket_Model_Port{
         });
     };
     getById = (id_appoiment:string) => this.repository.getById(id_appoiment);
+
+    delete = (id_ticket: string): Promise<boolean> => {
+        return new Promise(async(res, rej)=>{
+            try{
+                const result = await this.repository.delete(id_ticket);
+                res(result);
+            }catch(error){
+                rej(error);
+            }
+        });
+    };
 }

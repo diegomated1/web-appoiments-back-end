@@ -10,7 +10,7 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
         private readonly database: Appoiments_Database
     ){}
 
-    getById = (id: string): Promise<Ticket> => {
+    getById = (id: string): Promise<Ticket|null> => {
         return new Promise(async(res, rej)=>{
             try{
                 const query = `SELECT * FROM tickets_by_id WHERE id_ticket = ?`;
@@ -36,7 +36,7 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
         });
     };
 
-    save = (entity:Ticket, ttl?:number): Promise<Ticket> => {
+    save = (entity:Ticket, ttl?:number): Promise<Ticket|null> => {
         return new Promise(async(res, rej)=>{
             try{
                 const params: string[] = [];
@@ -72,8 +72,23 @@ export default class Ticket_Repository_Adapter implements Ticket_Repository_Adap
     };
 
     delete = (id: string):Promise<boolean> => {
-        return new Promise((res, rej)=>{
-            res(true)
+        return new Promise(async(res, rej)=>{
+            try{
+                const _ticket = await this.getById(id);
+                if(!_ticket){
+                    return res(false);
+                }
+                let query1 = `DELETE FROM tickets_by_id WHERE id_ticket = ?`;
+                let query2 = `DELETE FROM tickets_by_priority WHERE priority = ? AND date = ? AND id_ticket = ?`;
+                const queries =  [
+                    { query: query1, params: [id] },
+                    { query: query2, params: [_ticket.priority, _ticket.date, id] } 
+                ];
+                await this.database.client.batch(queries, {prepare: true});
+                res(true)
+            }catch(error){
+                rej(error);
+            }
         });
     }
 }

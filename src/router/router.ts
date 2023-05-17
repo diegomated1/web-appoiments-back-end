@@ -23,5 +23,6 @@ export default class WebAppRouter implements WebAppRouterPort {
     this.router.route('/tickets').get(this.ticketController.getAll.bind(this.ticketController));
     this.router.route('/tickets').post(this.ticketController.create.bind(this.ticketController));
     this.router.route('/tickets/:id_ticket').get(this.ticketController.getById.bind(this.ticketController));
+    this.router.route('/tickets/:id_ticket').delete(this.ticketController.delete.bind(this.ticketController));
   }
 }
